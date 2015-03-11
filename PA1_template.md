@@ -2,6 +2,7 @@
 ===================
 
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+(From introduction: Peer Assignment 1)
 
 **Chronology of Analysis**
 
@@ -12,7 +13,8 @@ This assignment makes use of data from a personal activity monitoring device. Th
 * Are there differences in activity patterns between weekdays and weekends?
 
 
-##Loading and preprocessing the data
+**Loading and preprocessing the data**
+
 * Read Data From activity.csv renamed activityrepresproj1.csv
 * Date downloaded: "Thu Mar 05 12:06:48 2015"
 
@@ -44,16 +46,16 @@ NA's   :2304     (Other)   :15840
 
 dates in dataset: 2012-10-01 thru 2012-11-30
 
-*Make a file without NAs*
+*Make a file without NAs
 
 
 ```r
 datadfnona <- datadf[complete.cases(datadf),];View(datadfnona)## result: 15,264rows 3var
 ```
 
-##What is mean total number of steps taken per day?
+**What is mean total number of steps taken per day?**
 
-1. Summarize the number of steps per day(ignoring NAs)
+***Summarize the number of steps per day(ignoring NAs)***
 
 
 ```r
@@ -63,7 +65,7 @@ stepsperday <- summarise(group_by(datadfnona, date),
         sumstepsday = sum(steps))## result 53rows 2var
 ```
 
-2. Create a histogram of total number of steps taken each day(sumstepsday)
+***Create a histogram of total number of steps taken each day(sumstepsday)***
 
 
 ```r
@@ -75,7 +77,7 @@ y="Count of Days")
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
-3. Calculate the mean/median of the total number of steps taken per day
+***Calculate the mean/median of the total number of steps taken per day***
 
 
 ```r
@@ -94,11 +96,11 @@ median(stepsperday$sumstepsday)
 ## [1] 10765
 ```
 
-##What is the average daily activity pattern?
+**What is the average daily activity pattern?**
 
-1. Make time series of 5 minute intervals(x) vs avg num steps/avg across all days(y)
+***Make time series of 5 minute intervals(x) vs avg num steps/avg across all days(y)***
 
-Group by intervals
+*Group by intervals
 
 
 ```r
@@ -106,7 +108,7 @@ groupinterval <- summarise(group_by(datadfnona, interval),
         medstepsinterval = mean(steps));View(groupinterval)## result 268rows 2var
 ```
 
-Add equal intervals
+*Add equal intervals
 
 
 ```r
@@ -122,9 +124,9 @@ y="Avg Steps/Avg Across All Days")
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
 
-2. Which 5-min interval, on avg across all days, contains the max num steps?
+***Which 5-min interval, on avg across all days, contains the max num steps?***
 
-Sort by steps, bringing max avg steps to top interval result max: interval 835
+*Sort by steps, bringing max avg steps to top interval result max: interval 835
 
 
 ```r
@@ -144,9 +146,9 @@ head(sortbysteps)
 ## 6      820         171.1509              500
 ```
 
-##Imputing missing values
+**Imputing missing values**
 
-1. Calculate total number of missing values Result: 2,304 NAs
+***Calculate total number of missing values Result: 2,304 NAs***
 
 
 ```r
@@ -157,16 +159,16 @@ sum(is.na(datadf$steps))
 ## [1] 2304
 ```
 
-2. Devise strategy to replace NAs
+***Devise strategy to replace NAs***
 
-Aggregate steps by respective interval using mean steps per interval
+*Aggregate steps by respective interval using mean steps per interval
 
 
 ```r
 grpintvlall <- aggregate(steps ~ interval, datadf, mean, na.rm = TRUE)
 ```
 
-3. Create new dataset: mean intervals calculated above into NAs of original data(datadf)
+***Create new dataset: mean intervals calculated above into NAs of original data(datadf)***
 
 
 ```r
@@ -178,16 +180,16 @@ datanafilled <- adply(datadf, 1, function(x) if (is.na(x$steps)) {
 })
 ```
 
-4. Make a histogram of total number of steps taken each day and mean/median of total steps
+***Make a histogram of total number of steps taken each day and mean/median of total steps***
 
-Calulate total steps taken of datanafilled  result: 17,568rows 3var
+*Calulate total steps taken of datanafilled  result: 17,568rows 3var
 
 
 ```r
 datadfnonafilled <- datanafilled[complete.cases(datanafilled),];View(datadfnonafilled)
 ```
 
-Summarize the number of steps per day result: 61rows 2var
+*Summarize the number of steps per day result: 61rows 2var
 
 
 ```r
@@ -195,7 +197,7 @@ stepsperdayfilled <- summarise(group_by(datadfnonafilled, date),
                          sumstepsday = sum(steps));View(stepsperdayfilled)
 ```
 
-Generate histogram
+*Generate histogram
 
 
 ```r
@@ -206,7 +208,7 @@ y="Count of Days")
 
 ![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png) 
 
-Calculate the mean/median
+*Calculate the mean/median
 
 
 ```r
@@ -226,15 +228,15 @@ median(stepsperdayfilled$sumstepsday)
 ## [1] 10762
 ```
 
-**What is the impact on imputing missing data on the estimates of the total daily steps?**
+*What is the impact on imputing missing data on the estimates of the total daily steps?
 
 There does not apprear to be much change in total steps per day when looking at the mean
 and median values.  Plotting with the same 1,000 steps/bin as the original shows some increase
 around 10,000 steps.
 
-##Are there differences in activity patterns between weekdays and weekends?
+**Are there differences in activity patterns between weekdays and weekends?**
 
-1. Add a day col and create new weekday/weekend factors
+***Add a day col and create new weekday/weekend factors***
 
 
 ```r
@@ -243,7 +245,7 @@ stepsperdaywewd$date <- as.Date(stepsperdaywewd$date)
 stepsperdaywewd$day <- weekdays(as.Date(stepsperdaywewd$date))
 ```
 
-Subset weekdays and weekends
+*Subset weekdays and weekends
 
 
 ```r
@@ -251,7 +253,7 @@ weekends <- subset(stepsperdaywewd, day %in% c("Saturday", "Sunday"))
 weekdays <- subset(stepsperdaywewd, day %in% c("Monday", "Tuesday", "Wednesday","Thursday","Friday"));View(weekdays)
 ```
 
-Get mean steps for weekday/weekend
+*Get mean steps for weekday/weekend
 
 
 ```r
@@ -259,7 +261,7 @@ wkendsintmnstps <- aggregate(steps ~ interval, weekends, mean)
 wkdaysintmnstps <- aggregate(steps ~ interval, weekdays, mean)
 ```
 
-Add day back in/add equal intervals
+*Add day back in/add equal intervals
 
 
 ```r
@@ -269,14 +271,14 @@ wkdaysintmnstps1 <- mutate(wkdaysintmnstps, day = "weekday")
 wkdaysintmnstps1$sequentialperiod <- seq(0, 1435, by = 5)
 ```
 
-rbind and add level
+*Combine weekend and weekday files
 
 
 ```r
 combwkwkend <- rbind(wkendsintmnstps1,wkdaysintmnstps1)
 ```
 
-Build panel plots weekends and weekdays
+***Build panel plots weekends and weekdays***
 
 
 ```r
@@ -286,7 +288,7 @@ labs(x = "5-minute interval", y = "Average number of steps")
 
 ![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-1.png) 
 
-**Add Commentary on Weekend vs Weekday**
+*Add Commentary on Weekend vs Weekday
 
 On weekdays there is a spike in activity, with respect to average number of steps, 
 at about the 500 5-minute interval and lower 5-minute intervals throughout the day.  
